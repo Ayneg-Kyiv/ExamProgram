@@ -47,19 +47,28 @@ int main()
 		}
 		else
 		{
-			cout << "Choose action\n1-Add new user\n2-Show\n3-Change info\n4-Delete\n5-Sort by name\n6-Search by name\n0-Exit\n";
+			cout << "Choose action\n1-Add new user\n2-Add additional information to user\n3-Show\n4-Change info\n5-Delete\n6-Delete extra info\n7-Sort by name\n8-Search by name\n0-Exit\n";
 
 			switch (_getch())
 			{
 			case '1':
 				Add(PhoneBook, Size);
 				break;
-			case '2':
-				Show(PhoneBook, Size);
+			case'2':
+				cout << "\n\tEnter index of user you want to add additional info - ";
+				cin >> Index;
+				Index--;
+				if (Index<0 || Index>Size)
+					cout << "\tWrong index\n";
+				else
+					AddInfo(PhoneBook, Size, Index);
 				break;
 			case '3':
+				Show(PhoneBook, Size);
+				break;
+			case '4':
 				cout << "\n\tChoose Information you want to change in Book\n";
-				cout << "\t1-Name\n\t2-Phone\n\t3-Email\n\t0-Back\n";
+				cout << "\t1-Name\n\t2-Phone\n\t3-Email\n\t4-Additional information\n\t0-Back\n";
 				switch (_getch())
 				{
 				case '1':
@@ -71,6 +80,9 @@ int main()
 				case '3':
 					Change(PhoneBook, Size, 3);
 					break;
+				case '4':
+					Change(PhoneBook, Size, 4);
+					break;
 				case '0':
 					break;
 				default:
@@ -79,7 +91,7 @@ int main()
 					break;
 				}
 				break;
-			case '4':
+			case '5':
 				cout << "\n\tDelete last Press 1\n\tDelete other Press 2\n\tPrevious menu Press 0\n";
 				switch (_getch())
 				{
@@ -87,7 +99,7 @@ int main()
 					Del(PhoneBook, Size, Size - 1);
 					break;
 				case '2':
-					cout << "\tEnter index of element you want to delete - ";
+					cout << "\n\tEnter index of element you want to delete - ";
 					cin >> Index;
 					Index--;
 					if (Index<0 || Index>Size)
@@ -103,10 +115,19 @@ int main()
 					break;
 				}
 				break;
-			case '5':
+			case '6':
+					cout << "\n\tEnter index of user you want to delete - ";
+					cin >> Index;
+					Index--;
+					if (Index<0 || Index>Size)
+						cout << "\tWrong index\n";
+					else
+						DelInfo(PhoneBook, Size, Index);
+				break;
+			case'7':
 				Sort(PhoneBook, Size);
 				break;
-			case'6':
+			case '8':
 				Search(PhoneBook, Size);
 				break;
 			case '0':

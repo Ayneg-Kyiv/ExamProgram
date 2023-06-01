@@ -1,4 +1,5 @@
 #include <iostream>
+#include <conio.h>
 #include <regex>
 #include"Header.h"
 #pragma once
@@ -29,6 +30,17 @@ void Read(User*& PhoneBook, int& Size)
 		PhoneBook[i].Email = new char[Str_Size + 1];
 		fread(PhoneBook[i].Email, sizeof(char), Str_Size, In);
 		PhoneBook[i].Email[Str_Size] = '\0';
+
+		fread(&PhoneBook[i].Info_Size, sizeof(int), 1, In);
+
+		PhoneBook[i].Info = new char* [PhoneBook[i].Info_Size];
+		for (int j = 0; j < PhoneBook[i].Info_Size; j++)
+		{
+			fread(&Str_Size, sizeof(int), 1, In);
+			PhoneBook[i].Info[j] = new char[Str_Size + 1];
+			fread(PhoneBook[i].Info[j], sizeof(char), Str_Size, In);
+			PhoneBook[i].Info[j][Str_Size] = '\0';
+		}
 	}
 	fclose(In);
 }
@@ -102,11 +114,71 @@ void Add(User*& PhoneBook, int& Size)
 			job = 0;
 		}
 	}
+
+	PhoneBook[Size].Info_Size = 0;
+	cout << "Do you want to add extra information?\n1 - Yes\n0 - No\n";
+	if (_getch() == '1')
+	{
+		job = 1;
+		while (job)
+		{
+			char** ChTemp = new char* [PhoneBook[Size].Info_Size + 1];
+			for (int i = 0; i < PhoneBook[Size].Info_Size; i++)
+			{
+				ChTemp[i] = PhoneBook[Size].Info[i];
+			}
+			delete[] PhoneBook[Size].Info;
+			PhoneBook[Size].Info = ChTemp;
+			cin.ignore(numeric_limits<streamsize>::max(), '\n');
+			cout << "Enter additional information - ";
+			cin.getline(temp, 100);
+			PhoneBook[Size].Info[PhoneBook[Size].Info_Size] = new char[strlen(temp) + 1];
+			strcpy(PhoneBook[Size].Info[PhoneBook[Size].Info_Size], temp);
+			PhoneBook[Size].Info_Size++;
+
+			cout << "Do you want to add extra information?\n1 - Yes\n0 - No\n";
+			if (_getch() == '0')
+			{
+				job = 0;
+			}
+		}
+	}
+
 	Size++;
+}
+
+void AddInfo(User*& PhoneBook, int Size, int index)
+{
+	char temp[100];
+	bool job = 1;
+	while (job)
+	{
+		char** ChTemp = new char* [PhoneBook[index].Info_Size + 1];
+		for (int i = 0; i < PhoneBook[index].Info_Size; i++)
+		{
+			ChTemp[i] = PhoneBook[index].Info[i];
+		}
+		delete[] PhoneBook[index].Info;
+		PhoneBook[index].Info = ChTemp;
+		cin.ignore(numeric_limits<streamsize>::max(), '\n');
+		cout << "Enter additional information - ";
+		cin.getline(temp, 100);
+		PhoneBook[index].Info[PhoneBook[index].Info_Size] = new char[strlen(temp) + 1];
+		strcpy(PhoneBook[index].Info[PhoneBook[index].Info_Size], temp);
+		PhoneBook[index].Info_Size++;
+
+		cout << "Do you want to add extra information?\n1 - Yes\n0 - No\n";
+		if (_getch() == '0')
+		{
+			job = 0;
+		}
+	}
 }
 
 int NameCheck (char* Name)
 {
+	// Possible variant of pattern "[A-Z a-z 0-9]+((\\s){1}[A-Z a-z 0-9]+)*"
+
 	const regex pattern("[A-Z]{1}[a-z]+((\\s){1}[A-Z]{1}[a-z]+){2}");
 
 	return regex_match(Name, pattern);
@@ -121,7 +193,7 @@ int PhoneCheck(char Phone[11])
 
 int EmailCheck(char* Email)
 {	
-	const regex pattern("(\\w){2,}(\\.|_)?(\\w+)@(\\w+)(\\.(\\w+))+");
+	const regex pattern("(\\w){3,}((\\.|_){1}(\\w+))*@(\\w+)(\\.(\\w+))+");
 
 	return regex_match(Email, pattern);
 }
@@ -134,6 +206,16 @@ void Show(User* PhoneBook, int Size)
 	for (int i = 0; i < Size; i++)
 	{
 		cout << i + 1 << "\t" << PhoneBook[i].Name << "\t" << PhoneBook[i].Phone << "\t"<< PhoneBook[i].Email<<"\n";
+
+		if (PhoneBook[i].Info_Size > 0)
+		{
+			cout << "# Extra information\n";
+			for (int j = 0; j < PhoneBook[i].Info_Size; j++)
+			{
+				cout << j+1 << " " << PhoneBook[i].Info[j] << "\n";
+			}
+			cout << "\n";
+		}
 	}
 	system("pause");
 }
@@ -144,6 +226,15 @@ void Show(User* PhoneBook, int Size,int i)
 	
 	cout << "#\tFull name\tPhone number\tEmail\n";
 	cout << i + 1 << "\t" << PhoneBook[i].Name << "\t" << PhoneBook[i].Phone << "\t" << PhoneBook[i].Email << "\n";
+	if (PhoneBook[i].Info_Size > 0)
+	{
+		cout << "# Extra information\n";
+		for (int j = 0; j < PhoneBook[i].Info_Size; j++)
+		{
+			cout << j + 1 << " " << PhoneBook[i].Info[j] << "\n";
+		}
+		cout << "\n";
+	}
 }
 
 void Change(User*& PhoneBook, int Size,int info)
@@ -232,6 +323,34 @@ void Change(User*& PhoneBook, int Size,int info)
 			}
 		}
 		break;
+	case 4:
+
+		cout << "Enter index of User - ";
+		cin >> Index;
+		if (Index < 1 || Index > Size)
+			cout << "Wrong index\n";
+		else
+		{
+			Index--;
+			while (job)
+			{
+				cout << "Choose what additional information you want to change - ";
+				cin >> flag;
+				if (flag < 1 || flag > PhoneBook[Index].Info_Size)
+					cout << "Wrong index\n";
+				else
+				{
+					flag--;
+					cin.ignore(numeric_limits<streamsize>::max(), '\n');
+					cout << "Enter new information - ";
+					cin.getline(temp, 100);
+					PhoneBook[Index].Info[flag] = new char[strlen(temp) + 1];
+					strcpy(PhoneBook[Index].Info[flag], temp);
+					job = 0;
+				}
+			}
+		}
+		break;
 	}
 }
 
@@ -253,6 +372,40 @@ void Del(User*& PhoneBook, int& Size, int Index)
 
 	PhoneBook = Temp;
 	Size--;
+}
+
+void DelInfo(User*& PhoneBook, int Size, int index)
+{
+	system("cls");
+	if (PhoneBook[index].Info_Size == 0)
+	{
+		cout << "No additional information\n";
+	}
+	else
+	{
+		int st = 0;
+		cout << "Choose additional information you want to delete - ";
+		cin >> st;
+		st--;
+		if (st < 0 || st > PhoneBook[index].Info_Size)
+			cout << "Wrong index\n";
+		else
+		{
+			st--;
+			char** Temp = new char* [PhoneBook[index].Info_Size - 1];
+			for (int i = 0; i < PhoneBook[index].Info_Size; i++)
+			{
+				if (i < st)
+					Temp[i] = PhoneBook[index].Info[i];
+				else if (i > index)
+					Temp[i - 1] = PhoneBook[index].Info[i];
+			}
+			delete[] PhoneBook[index].Info;
+			PhoneBook[index].Info = Temp;
+
+			PhoneBook[index].Info_Size--;
+		}
+	}
 }
 
 void Sort(User*& PhoneBook, int Size)
@@ -304,7 +457,7 @@ void Search(User* PhoneBook, int Size)
 	if (flag != 0)
 		cout << "\nFound " << flag << " person\n";
 	else
-		cout << "\nThere is no User with name "<< temp <<"\n";
+		cout << "\nThere is no User with this name "<< temp <<"\n";
 	system("pause");
 }
 
@@ -323,6 +476,15 @@ void Write(User* PhoneBook, int Size)
 		Str_Size = strlen(PhoneBook[i].Email);
 		fwrite(&Str_Size, sizeof(int), 1, In);
 		fwrite(PhoneBook[i].Email, sizeof(char), Str_Size, In);
+
+		fwrite(&PhoneBook[i].Info_Size, sizeof(int), 1, In);
+
+		for (int j = 0; j < PhoneBook[i].Info_Size; j++)
+		{
+			Str_Size = strlen(PhoneBook[i].Info[j]);
+			fwrite(&Str_Size, sizeof(int), 1, In);
+			fwrite(PhoneBook[i].Info[j], sizeof(char), Str_Size, In);
+		}
 	}
 	fclose(In);
 }
