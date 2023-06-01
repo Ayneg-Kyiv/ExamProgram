@@ -59,7 +59,7 @@ int main()
 				cin >> Index;
 				Index--;
 				if (Index<0 || Index>Size)
-					cout << "\tWrong index\n";
+					cout << "\n\tWrong index\n";
 				else
 					AddInfo(PhoneBook, Size, Index);
 				break;

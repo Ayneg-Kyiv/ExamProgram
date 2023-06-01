@@ -149,6 +149,7 @@ void Add(User*& PhoneBook, int& Size)
 
 void AddInfo(User*& PhoneBook, int Size, int index)
 {
+	system("cls");
 	char temp[100];
 	bool job = 1;
 	while (job)
@@ -261,7 +262,7 @@ void Change(User*& PhoneBook, int Size,int info)
 				cin.getline(temp, 100);
 
 				flag = NameCheck(temp);
-				if (flag != 0)
+				if (flag != 1)
 					cout << "Wrong name format\n";
 				else
 				{
@@ -386,12 +387,10 @@ void DelInfo(User*& PhoneBook, int Size, int index)
 		int st = 0;
 		cout << "Choose additional information you want to delete - ";
 		cin >> st;
-		st--;
-		if (st < 0 || st > PhoneBook[index].Info_Size)
+		if (st < 1 || st > PhoneBook[index].Info_Size)
 			cout << "Wrong index\n";
 		else
 		{
-			st--;
 			char** Temp = new char* [PhoneBook[index].Info_Size - 1];
 			for (int i = 0; i < PhoneBook[index].Info_Size; i++)
 			{
@@ -410,20 +409,22 @@ void DelInfo(User*& PhoneBook, int Size, int index)
 
 void Sort(User*& PhoneBook, int Size)
 {
-	User temp;
-	for (int k = 0; k < Size; k++)
+	for (int i = 0; i < Size - 1; i++)
 	{
-		for (int f = 0; f < Size; f++)
+		for (int j = 0; j<Size-i-1; j++)
 		{
-			for (int i = 0; i < Size-1; i++)
+			int k = 0;
+			while (true)
 			{
-				for (int j = 0; PhoneBook[i].Name[j] != '\0'; j++)
-				{
-					if (PhoneBook[i].Name[j] > PhoneBook[i + 1].Name[j])
-					{
-						swap(PhoneBook[i], PhoneBook[i + 1]);
-					}
-				}
+				if (PhoneBook[j].Name[k] != PhoneBook[j + 1].Name[k])
+					break;
+				else
+					k++;
+			}
+
+			if (PhoneBook[j].Name[k] > PhoneBook[j + 1].Name[k])
+			{
+				swap(PhoneBook[j], PhoneBook[j + 1]);
 			}
 		}
 	}
