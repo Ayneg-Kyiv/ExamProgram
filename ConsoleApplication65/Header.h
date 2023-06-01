@@ -5,7 +5,10 @@ struct User
 	char* Name = nullptr;
 	char Phone[11];
 	char* Email = nullptr;
+	int Info_Size;
+	char** Info;
 };
+
 void Read(User*&, int&);
 
 void Add(User*&, int&);
