@@ -147,6 +147,14 @@ int main()
 	{
 		delete[] PhoneBook[i].Name;
 		delete[] PhoneBook[i].Email;
+		if (PhoneBook[i].Info_Size > 0)
+		{
+			for (int j = 0; j < PhoneBook[i].Info_Size; j++)
+			{
+				delete[]PhoneBook[i].Info[j];
+			}
+		}
+		delete[] PhoneBook[i].Info;
 	}
 	delete[] PhoneBook;
 }

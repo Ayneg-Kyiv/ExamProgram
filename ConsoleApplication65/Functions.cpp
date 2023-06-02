@@ -381,6 +381,7 @@ void DelInfo(User*& PhoneBook, int Size, int index)
 	if (PhoneBook[index].Info_Size == 0)
 	{
 		cout << "No additional information\n";
+		system("pause");
 	}
 	else
 	{
